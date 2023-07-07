@@ -1,5 +1,12 @@
 vim.opt_global.scrolloff = 4
 
+-- Codeium bindings
+lvim.keys.insert_mode["<Home>"] = "<cmd>call codeium#CycleCompletions(1)<CR>"
+lvim.keys.insert_mode["<End>"] = "<cmd>call codeium#CycleCompletions(-1)<CR>"
+lvim.keys.insert_mode["<PageDown>"] = "<cmd>call codeium#Clear()<CR>"
+-- Disable codeium
+-- vim.opt_global.codeium_disable_bindings = 1
+
 -- Resize with arrows
 lvim.keys.normal_mode["\\j"] = ":resize -2<CR>"
 lvim.keys.normal_mode["\\k"] = ":resize +2<CR>"
@@ -28,7 +35,7 @@ lvim.keys.normal_mode["-"] = "ddp"
 lvim.keys.normal_mode["_"] = "ddkP"
 
 -- Surround words with characters
-lvim.keys.normal_mode["<leader>\""] = "viw<ESC>a\"<ESC>bi\"<ESC>lel"
+lvim.keys.normal_mode['<leader>"'] = 'viw<ESC>a"<ESC>bi"<ESC>lel'
 lvim.keys.normal_mode["<leader>'"] = "viw<ESC>a'<ESC>bi'<ESC>lel"
 lvim.keys.normal_mode["<leader>["] = "viw<ESC>a]<ESC>bi[<ESC>lel"
 lvim.keys.normal_mode["<leader>("] = "viw<ESC>a)<ESC>bi(<ESC>lel"
@@ -40,19 +47,24 @@ lvim.keys.normal_mode["<leader>h"] = "<cmd>set hlsearch!<CR>"
 
 -- Which key additions
 lvim.builtin.which_key.mappings["P"] = {
-  "<cmd>lua require'telescope'.extensions.project.project{}<CR>", "Projects"
+  "<cmd>lua require'telescope'.extensions.project.project{}<CR>",
+  "Projects",
 }
 lvim.builtin.which_key.mappings["B"] = {
-  "<cmd>Telescope buffers<CR>", "Open Buffers"
+  "<cmd>Telescope buffers<CR>",
+  "Open Buffers",
 }
 lvim.builtin.which_key.mappings["sB"] = {
-   "<cmd>Telescope current_buffer_fuzzy_find<CR>", "fuzzy find open buffers"
+  "<cmd>Telescope current_buffer_fuzzy_find<CR>",
+  "fuzzy find open buffers",
 }
 lvim.builtin.which_key.mappings["T"] = {
-   "<cmd>16split <bar> botright terminal<CR>", "Open terminal at bottom"
+  "<cmd>16split <bar> botright terminal<CR>",
+  "Open terminal at bottom",
 }
 lvim.builtin.which_key.mappings["u"] = {
-   "<cmd>UndotreeToggle<CR>", "undotree"
+  "<cmd>UndotreeToggle<CR>",
+  "undotree",
 }
 
 -- lvim.colorscheme = "gruvbox-baby"
@@ -63,7 +75,7 @@ lvim.autocommands = {
     {
       pattern = { "*" },
       command = [[:%s/\s\+$//e]],
-    }
+    },
   },
   {
     "FileType",
@@ -75,7 +87,35 @@ lvim.autocommands = {
           set nobuflisted
         ]]
       end,
-    }
+    },
+  },
+}
+
+local formatters = require "lvim.lsp.null-ls.formatters"
+formatters.setup {
+  { name = "black" },
+  { name = "gofumpt" },
+  { name = "shellharden" },
+  { name = "stylua" },
+  -- {
+  --   name = "prettier",
+  --   ---@usage arguments to pass to the formatter
+  --   -- these cannot contain whitespace
+  --   -- options such as `--line-width 80` become either `{"--line-width", "80"}` or `{"--line-width=80"}`
+  --   args = { "--print-width", "100" },
+  --   ---@usage only start in these filetypes, by default it will attach to all filetypes it supports
+  --   filetypes = { "typescript", "typescriptreact" },
+  -- },
+}
+lvim.format_on_save.enabled = true
+
+local linters = require "lvim.lsp.null-ls.linters"
+linters.setup {
+  { name = "actionlint" },
+  { name = "golangci_lint" },
+  {
+    name = "shellcheck",
+    args = { "--severity", "warning" },
   },
 }
 
@@ -120,13 +160,22 @@ lvim.plugins = {
   { "mbbill/undotree" },
   -- Glow
   { "ellisonleao/glow.nvim" },
+  -- nvim-dap-go
+  { "leoluz/nvim-dap-go" },
   -- Gruvbox
   { "luisiacc/gruvbox-baby" },
+  -- Codeium
+  { "Exafunction/codeium.vim" },
 }
+
+local status_ok, dap_go = pcall(require, "dap-go")
+if status_ok then
+  dap_go.setup()
+end
 
 local status_ok, glow = pcall(require, "glow")
 if status_ok then
-  glow.setup({
+  glow.setup {
     width = 100,
- })
+  }
 end
