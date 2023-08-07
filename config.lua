@@ -6,6 +6,7 @@ lvim.keys.insert_mode["<End>"] = "<cmd>call codeium#CycleCompletions(-1)<CR>"
 lvim.keys.insert_mode["<PageDown>"] = "<cmd>call codeium#Clear()<CR>"
 -- Disable codeium
 -- vim.opt_global.codeium_disable_bindings = 1
+lvim.builtin.treesitter.rainbow.enable = true
 
 -- Resize with arrows
 lvim.keys.normal_mode["\\j"] = ":resize -2<CR>"
@@ -46,6 +47,10 @@ lvim.keys.normal_mode["<leader><"] = "viw<ESC>a><ESC>bi<<ESC>lel"
 lvim.keys.normal_mode["<leader>h"] = "<cmd>set hlsearch!<CR>"
 
 -- Which key additions
+lvim.builtin.which_key.mappings["G"] = {
+  "<cmd>topleft Git<CR>",
+  "Git",
+}
 lvim.builtin.which_key.mappings["P"] = {
   "<cmd>lua require'telescope'.extensions.project.project{}<CR>",
   "Projects",
@@ -95,6 +100,7 @@ local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
   { name = "black" },
   { name = "gofumpt" },
+  { name = "rubocop" },
   { name = "shellharden" },
   { name = "stylua" },
   -- {
@@ -113,6 +119,7 @@ local linters = require "lvim.lsp.null-ls.linters"
 linters.setup {
   { name = "actionlint" },
   { name = "golangci_lint" },
+  -- { name = "rubocop" },
   {
     name = "shellcheck",
     args = { "--severity", "warning" },
@@ -158,6 +165,8 @@ lvim.plugins = {
   { "nvim-telescope/telescope-project.nvim" },
   -- UndoTree
   { "mbbill/undotree" },
+  -- nvim-ts-rainbow
+  { "mrjones2014/nvim-ts-rainbow" },
   -- Glow
   { "ellisonleao/glow.nvim" },
   -- nvim-dap-go
@@ -166,6 +175,33 @@ lvim.plugins = {
   { "luisiacc/gruvbox-baby" },
   -- Codeium
   { "Exafunction/codeium.vim" },
+  -- neodev
+  { "folke/neodev.nvim" },
+  -- telescope-dap
+  { "nvim-telescope/telescope-dap.nvim" },
+  -- sourcegraph sg
+  -- {
+  --   "sourcegraph/sg.nvim",
+  --   build = "cargo build --workspace",
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --   },
+  -- },
+  -- tpope goodness
+  { "tpope/vim-rails" },
+  { "tpope/vim-fugitive" },
+  -- octo stuff
+  {
+    "pwntester/octo.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope.nvim",
+      "nvim-tree/nvim-web-devicons",
+    },
+    config = function()
+      require("octo").setup()
+    end,
+  },
 }
 
 local status_ok, dap_go = pcall(require, "dap-go")
@@ -179,3 +215,10 @@ if status_ok then
     width = 100,
   }
 end
+
+require("neodev").setup {
+  library = {
+    types = true,
+    plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
+  },
+}
