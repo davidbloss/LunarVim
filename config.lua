@@ -13,6 +13,10 @@ lvim.keys.normal_mode["\\j"] = ":resize -2<CR>"
 lvim.keys.normal_mode["\\k"] = ":resize +2<CR>"
 lvim.keys.normal_mode["\\l"] = ":vertical resize -2<CR>"
 lvim.keys.normal_mode["\\h"] = ":vertical resize +2<CR>"
+--
+-- Quick buffer switching
+lvim.keys.normal_mode["H"] = "<CMD>BufferLineCyclePrev<CR>"
+lvim.keys.normal_mode["L"] = "<CMD>BufferLineCycleNext<CR>"
 
 -- nvim-tree.update_focused_file.update_root*
 
@@ -47,12 +51,21 @@ lvim.keys.normal_mode["<leader><"] = "viw<ESC>a><ESC>bi<<ESC>lel"
 lvim.keys.normal_mode["<leader>h"] = "<cmd>set hlsearch!<CR>"
 
 -- Which key additions
+lvim.builtin.which_key.mappings["gB"] = {
+  "<cmd>Git blame<CR>",
+  "Git Blame",
+}
+lvim.builtin.which_key.mappings["gw"] = {
+  name = "Git Worktrees",
+  a = { "<cmd>lua require('telescope').extensions.git_worktree.create_git_worktree()<cr>", "Add" },
+  l = { "<cmd>lua require('telescope').extensions.git_worktree.git_worktrees()<cr>", "List" },
+}
 lvim.builtin.which_key.mappings["G"] = {
   "<cmd>topleft Git<CR>",
   "Git",
 }
 lvim.builtin.which_key.mappings["P"] = {
-  "<cmd>lua require'telescope'.extensions.project.project{}<CR>",
+  "<cmd>Telescope projects<CR>",
   "Projects",
 }
 lvim.builtin.which_key.mappings["B"] = {
@@ -96,6 +109,13 @@ lvim.autocommands = {
   },
 }
 
+-- add `pyright` to `skipped_servers` list
+vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "pyright" })
+-- remove `jedi_language_server` from `skipped_servers` list
+lvim.lsp.automatic_configuration.skipped_servers = vim.tbl_filter(function(server)
+  return server ~= "jedi_language_server"
+end, lvim.lsp.automatic_configuration.skipped_servers)
+
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
   { name = "black" },
@@ -124,45 +144,36 @@ linters.setup {
     name = "shellcheck",
     args = { "--severity", "warning" },
   },
+  -- { name = "tflint" },
 }
-
---
--- local banner = {
---   "                             .^!?7^.                             ",
---   "                         .:!?JJ?!?JJ?!^.                         ",
---   "                      :~7?J?7^:   :^7?J?7~:                      ",
---   "                   .~?JJJ~.           :~?JJ?~                    ",
---   "                   .7JJ?J7!^.       .^!7JJJJ?.                   ",
---   "                   :7J?:^!?JJ?!:.:~?JJ?!^^?J?:                   ",
---   "               .:~7?JJ?.   :~7?J?J?7~:   .?JJJ7~:.               ",
---   "            .^7?JJJ??J?.      .?J?.      .?J?7?JJ?7~.            ",
---   "        .^!?JJJ7~^..7J?.      .7J?.      .?J7..^!7JJJ?!^:        ",
---   "       !JJJ?!^:    .7JJ~:     .7J?.     .~?J7.    :^7?JJJ7       ",
---   "      .?JJ~         :!7JJ?!^. .7J?. .^!?JJ7~:         !JJJ       ",
---   "      .?JJ:            .^!?JJ?!?J?!7JJ?!^.            ~JJ?       ",
---   "      .?JJ^                :~7?JJJ?!^:                ~JJ?       ",
---   "      .?JJ:  .:.              .:~^.              .::  ~JJ?       ",
---   "      .?JJ!~7JJ?!^.                           :^!?JJ?~!JJ?       ",
---   "     .^?JJJ?!^^!?JJ?!^.                   .^!?JJ?~^^!?JJJJ:.     ",
---   "  .^!?J?7~:.     .~7???7!:             :~7?J?!^.     .:~7???!~.  ",
---   " :JJJJ?:.           .!JJJJ~           ~JJJJ!.            ^7JJJ?: ",
---   " :JJ?7JJ?!^:    .:!7JJ77JJ!           ~JJ7?J?7!^.    .^!?J?7?JJ^ ",
---   " :JJ! .^!?JJ?~~7?J?7~: ^JJ~           ~J?: :~!?JJ7~~7JJ?!^. !J?^ ",
---   " :JJ!     :~7JJ?~:.    ^JJ~           ~J?:    .:~?JJ7^:     !J?^ ",
---   " :JJ!       :JJ!       ^JJ~           ~J?:       !JJ^       !J?^ ",
---   " :JJ!       :JJ!       ^JJ!           ~J?^       !JJ^       !JJ^ ",
---   " :?JJ7~:    :JJ!    .^!?J?^           ~JJ?7^.    !JJ^   .:~7JJ?: ",
---   "  .:~?JJ?!^.:JJ!.:~7?J7!^.             .^!?J?7!:.!JJ^.^7?JJ7!:.  ",
---   "      .:!?JJ?JJ??JJJJJ!^.               .^7JJJJJ??JJ?JJ?!^.      ",
---   "          :^!??7~:.^!?JJJ7!^.       .^!7JJJ7!^.:~7J?7^.          ",
---   "             ..       .~7?JJJ?~:.:~7?JJ?7~.       ..             ",
---   "                         .:~7JJJJJJJ7~:.                         ",
---   "                             .^!7~^.                             ",
--- }
 
 lvim.plugins = {
   -- Telescope extensions
-  { "nvim-telescope/telescope-project.nvim" },
+  {
+    "nvim-telescope/telescope-project.nvim",
+    dependencies = {
+      "telescope.nvim",
+    },
+    config = function()
+      require("telescope").setup {
+        extensions = {
+          project = {
+            base_dirs = { { path = "~/opslevel/", max_depth = 2 } },
+            hidden_files = true, -- default: false
+            theme = "dropdown",
+            order_by = "asc",
+            search_by = "title",
+            sync_with_nvim_tree = true, -- default false
+            -- default for on_project_selected = find project files
+            on_project_selected = function(prompt_bufnr)
+              -- Do anything you want in here. For example:
+              require("telescope._extensions.project.actions").change_working_directory(prompt_bufnr, false)
+            end,
+          },
+        },
+      }
+    end,
+  },
   -- UndoTree
   { "mbbill/undotree" },
   -- nvim-ts-rainbow
@@ -179,6 +190,26 @@ lvim.plugins = {
   { "folke/neodev.nvim" },
   -- telescope-dap
   { "nvim-telescope/telescope-dap.nvim" },
+  -- git worktree goodness
+  {
+    "ThePrimeagen/git-worktree.nvim",
+    dependencies = {
+      "nvim-lua/popup.nvim",
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope.nvim",
+      "nvim-telescope/telescope-fzy-native.nvim",
+    },
+    config = function()
+      require("git-worktree").setup {
+        change_directory_command = "cd", -- default: "cd",
+        update_on_change = true, -- default: true,
+        update_on_change_command = "e .", -- default: "e .",
+        clearjumps_on_change = true, -- default: true,
+        autopush = false, -- default: false,
+      }
+      require("telescope").load_extension "git_worktree"
+    end,
+  },
   -- sourcegraph sg
   -- {
   --   "sourcegraph/sg.nvim",
@@ -209,10 +240,10 @@ if status_ok then
   dap_go.setup()
 end
 
-local status_ok, glow = pcall(require, "glow")
-if status_ok then
+local glow_status_ok, glow = pcall(require, "glow")
+if glow_status_ok then
   glow.setup {
-    width = 100,
+    width = 160,
   }
 end
 
