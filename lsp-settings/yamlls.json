@@ -1,0 +1,7 @@
+{
+  "yaml.schemas": {
+    "/Users/davidbloss/opslevel/opslevel.schema.yml": "opslevel.yml",
+    "/Users/davidbloss/opslevel/opslevel-k8s-schema.json": "opslevel-k8s.yaml",
+    "https://app.opslevel.com/schemas/properties/v1/metaschema": "opslevel_metaschema.yml"
+  }
+}

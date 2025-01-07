@@ -1,0 +1,10 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "/Users/davidbloss/repos/CRDs-catalog/**/*.json",
+        "/Users/davidbloss/repos/kubernetes-json-schema/v1.29.2/**/*.json"
+      ]
+    }
+  ]
+}

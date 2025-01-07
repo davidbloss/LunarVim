@@ -1,9 +1,16 @@
 vim.opt_global.scrolloff = 4
 
+-- telescope layout
+lvim.builtin.telescope.defaults.layout_config.width = 0.85
+lvim.builtin.telescope.defaults.layout_config.height = 0.80
+lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
+-- lvim.builtin.telescope.defaults.layout_strategy = "horizontal"
+
 -- Codeium bindings
 lvim.keys.insert_mode["<Home>"] = "<cmd>call codeium#CycleCompletions(1)<CR>"
 lvim.keys.insert_mode["<End>"] = "<cmd>call codeium#CycleCompletions(-1)<CR>"
-lvim.keys.insert_mode["<PageDown>"] = "<cmd>call codeium#Clear()<CR>"
+-- lvim.keys.insert_mode["PageUp"] = "<cmd>call codeium#Accept()<CR>"
+-- lvim.keys.insert_mode["<PageDown>"] = "<cmd>call codeium#Clear()<CR>"
 -- Disable codeium
 -- vim.opt_global.codeium_disable_bindings = 1
 lvim.builtin.treesitter.rainbow.enable = true
@@ -64,10 +71,30 @@ lvim.builtin.which_key.mappings["G"] = {
   "<cmd>topleft Git<CR>",
   "Git",
 }
+-- lvim.builtin.which_key.mappings["H"] = {
+--   "<cmd>topleft Harpoon<CR>",
+--   "Harpoon",
+-- }
 lvim.builtin.which_key.mappings["P"] = {
   "<cmd>Telescope projects<CR>",
   "Projects",
 }
+-- lvim.builtin.which_key.mappings["nc"] = {
+--   "<cmd>Neorg toggle-concealer<CR>",
+--   "Neorg toggle concealer",
+-- }
+-- lvim.builtin.which_key.mappings["ni"] = {
+--   "<cmd>Neorg index<CR>",
+--   "Neorg index",
+-- }
+-- lvim.builtin.which_key.mappings["nj"] = {
+--   "<cmd>Neorg journal today<CR>",
+--   "Neorg journal today",
+-- }
+-- lvim.builtin.which_key.mappings["nw"] = {
+--   ":Neorg workspace <C-d>",
+--   "Neorg workspace",
+-- }
 lvim.builtin.which_key.mappings["B"] = {
   "<cmd>Telescope buffers<CR>",
   "Open Buffers",
@@ -88,6 +115,13 @@ lvim.builtin.which_key.mappings["u"] = {
 -- lvim.colorscheme = "gruvbox-baby"
 
 lvim.autocommands = {
+  {
+    "BufEnter",
+    {
+      pattern = { "*.norg" },
+      command = [[:set conceallevel=2]],
+    },
+  },
   {
     "BufWritePre",
     {
@@ -188,6 +222,47 @@ lvim.plugins = {
   { "Exafunction/codeium.vim" },
   -- neodev
   { "folke/neodev.nvim" },
+  -- nvim-neorg
+  -- {
+  --   "nvim-neorg/neorg",
+  --   -- build = ":Neorg sync-parsers", -- This is the important bit!
+  --   -- cmd = "Neorg", -- lazy load on command, allows you to autocomplete :Neorg regardless of whether it's loaded yet
+  --   priority = 30, -- treesitter is on default priority of 50, neorg should load after it.
+  --   dependencies = { "nvim-lua/plenary.nvim" },
+  --   config = function()
+  --     require("neorg").setup {
+  --       load = {
+  --         ["core.defaults"] = {},
+  --         ["core.concealer"] = {},
+  --         ["core.journal"] = {
+  --           config = {
+  --             workspace = "journal",
+  --           },
+  --         },
+  --         ["core.summary"] = {},
+  --         ["core.esupports.hop"] = {},
+  --         ["core.neorgcmd"] = {},
+  --         ["core.neorgcmd.commands.module.list"] = {},
+  --         ["core.ui"] = {},
+  --         ["core.integrations.treesitter"] = {},
+  --         ["core.dirman"] = {
+  --           config = {
+  --             workspaces = {
+  --               back_burner = "~/notes/back_burner",
+  --               journal = "~/notes",
+  --               misc = "~/notes/misc",
+  --               opslevel_on_opslevel = "~/notes/opslevel_on_opslevel",
+  --               presentations = "~/notes/presentations",
+  --               proposals = "~/notes/proposals",
+  --               support = "~/notes/support",
+  --             },
+  --             -- default_workspace = "notes",
+  --           },
+  --         },
+  --       },
+  --     }
+  --   end,
+  -- },
   -- telescope-dap
   { "nvim-telescope/telescope-dap.nvim" },
   -- git worktree goodness
@@ -210,6 +285,37 @@ lvim.plugins = {
       require("telescope").load_extension "git_worktree"
     end,
   },
+  {
+    "ThePrimeagen/harpoon",
+    branch = "harpoon2",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      require("harpoon").setup()
+    end,
+  },
+  { "towolf/vim-helm" },
+  -- {
+  --   "github/copilot.vim",
+  --   version = "v1.38.0", -- 2024-07-11
+  --   config = function()
+  --     -- Enable the plugin only for certain file types.
+  --     -- lvim.g.copilot_filetypes = {
+  --     --   ["*"] = false,
+  --     --   dockerfile = true,
+  --     --   go = true,
+  --     --   lua = true,
+  --     --   markdown = true,
+  --     --   terraform = true,
+  --     --   yaml = true,
+  --     -- }
+  --     -- Use a custom completion command.
+  --     -- lvim.g.copilot_no_tab_map = true
+  --     -- lvim.keymap.set("i", "<C-x><C-j>", 'copilot#Accept("")', {
+  --     --   expr = true,
+  --     --   replace_keycodes = false,
+  --     -- })
+  --   end,
+  -- },
   -- sourcegraph sg
   -- {
   --   "sourcegraph/sg.nvim",
