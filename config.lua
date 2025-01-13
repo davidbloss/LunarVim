@@ -7,8 +7,8 @@ lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
 -- lvim.builtin.telescope.defaults.layout_strategy = "horizontal"
 
 -- Codeium bindings
-lvim.keys.insert_mode["<Home>"] = "<cmd>call codeium#CycleCompletions(1)<CR>"
-lvim.keys.insert_mode["<End>"] = "<cmd>call codeium#CycleCompletions(-1)<CR>"
+-- lvim.keys.insert_mode["<Home>"] = "<cmd>call codeium#CycleCompletions(1)<CR>"
+-- lvim.keys.insert_mode["<End>"] = "<cmd>call codeium#CycleCompletions(-1)<CR>"
 -- lvim.keys.insert_mode["PageUp"] = "<cmd>call codeium#Accept()<CR>"
 -- lvim.keys.insert_mode["<PageDown>"] = "<cmd>call codeium#Clear()<CR>"
 -- Disable codeium
@@ -219,7 +219,7 @@ lvim.plugins = {
   -- Gruvbox
   { "luisiacc/gruvbox-baby" },
   -- Codeium
-  { "Exafunction/codeium.vim" },
+  -- { "Exafunction/codeium.vim" },
   -- neodev
   { "folke/neodev.nvim" },
   -- nvim-neorg
