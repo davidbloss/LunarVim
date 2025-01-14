@@ -15,11 +15,14 @@ lvim.builtin.telescope.defaults.layout_config.preview_cutoff = 120
 -- vim.opt_global.codeium_disable_bindings = 1
 lvim.builtin.treesitter.rainbow.enable = true
 
+-- From upcoming setup
+lvim.keys.normal_mode["<leader>Ez"] = "<CMD>edit ~/.zshrc<CR>"
+
 -- Resize with arrows
-lvim.keys.normal_mode["\\j"] = ":resize -2<CR>"
-lvim.keys.normal_mode["\\k"] = ":resize +2<CR>"
-lvim.keys.normal_mode["\\l"] = ":vertical resize -2<CR>"
-lvim.keys.normal_mode["\\h"] = ":vertical resize +2<CR>"
+lvim.keys.normal_mode["<localleader>j"] = "<CMD>resize -4<CR>"
+lvim.keys.normal_mode["<localleader>k"] = "<CMD>resize +4<CR>"
+lvim.keys.normal_mode["<localleader>l"] = "<CMD>vertical resize -4<CR>"
+lvim.keys.normal_mode["<localleader>h"] = "<CMD>vertical resize +4<CR>"
 --
 -- Quick buffer switching
 lvim.keys.normal_mode["H"] = "<CMD>BufferLineCyclePrev<CR>"
@@ -219,7 +222,7 @@ lvim.plugins = {
   -- Gruvbox
   { "luisiacc/gruvbox-baby" },
   -- Codeium
-  -- { "Exafunction/codeium.vim" },
+  { "Exafunction/codeium.vim" },
   -- neodev
   { "folke/neodev.nvim" },
   -- nvim-neorg
@@ -327,6 +330,12 @@ lvim.plugins = {
   -- tpope goodness
   { "tpope/vim-rails" },
   { "tpope/vim-fugitive" },
+  { "pasky/claude.vim" },
+  {
+    "vhyrro/luarocks.nvim",
+    priority = 1000, -- Very high priority is required, luarocks.nvim should run as the first plugin in your config.
+    config = true,
+  },
   -- octo stuff
   {
     "pwntester/octo.nvim",
